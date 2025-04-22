@@ -11,9 +11,9 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int loanId;
 
-    @ManyToOne(targetEntity = Person.class)
-    @JoinColumn(name="person_id")
-    private Person person;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name="user_id")
+    private User user;
 
     @ManyToOne(targetEntity = Book.class)
     @JoinColumn(name="book_id")
@@ -24,8 +24,8 @@ public class Loan {
 
     public Loan() {}
 
-    public Loan(Person person, Book book, LocalDate loanDate) {
-        this.person = person;
+    public Loan(User user, Book book, LocalDate loanDate) {
+        this.user = user;
         this.book = book;
         this.loanDate = loanDate;
     }
@@ -34,8 +34,8 @@ public class Loan {
         return loanId;
     }
 
-    public int getPersonId() {
-        return person.getPersonId();
+    public int getUserId() {
+        return user.getUserId();
     }
 
     public int getBookId() {
