@@ -32,8 +32,8 @@ public class ValidateTokenFilter extends OncePerRequestFilter {
         System.out.println("\n\n" + token + "\n\n");
 
         if (token != null) {
-            String username = jwtService.validateToken(token);
-            Optional<User> user = userRepository.findByUsername(username);
+            String name = jwtService.validateToken(token);
+            Optional<User> user = userRepository.findByEmail(name);
             if (user.isPresent()) {
                 var authenticationToken = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

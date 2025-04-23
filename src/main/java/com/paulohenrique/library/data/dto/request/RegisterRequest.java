@@ -5,12 +5,16 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
-        @NotBlank(message = "Username is required")
-        @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-        String username,
+        @NotBlank(message = "Name is required")
+        @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
+        String name,
+
+        @NotBlank(message = "Email is required")
+        @Pattern(regexp = "^(.+)@(\\S+)$", message = "Email must be in valid format")
+        String email,
 
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 50, message = "Username must be between 8 and 50 characters")
+        @Size(min = 8, max = 50, message = "Name must be between 8 and 50 characters")
         String password,
 
         @NotBlank(message = "CEP code is required")

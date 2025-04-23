@@ -1,19 +1,21 @@
--- table book
-CREATE TABLE book (
-    book_id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(45) NOT NULL,
-    author VARCHAR(45) NOT NULL,
-    release_date DATE NOT NULL,
-    PRIMARY KEY (book_id)
-);
-
 -- table user
 CREATE TABLE users (
     user_id INT NOT NULL AUTO_INCREMENT,
-    username VARCHAR(80) NOT NULL UNIQUE,
+    name VARCHAR(80) NOT NULL,
+    email VARCHAR(256) NOT NULL UNIQUE,
     password VARCHAR(80) NOT NULL,
     cep CHAR(9) NOT NULL,
+    state VARCHAR(80) NOT NULL,
     PRIMARY KEY (user_id)
+);
+
+-- table book
+CREATE TABLE book (
+    book_id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(45) NOT NULL,
+    author VARCHAR(45) NOT NULL,
+    release_date DATE NOT NULL,
+    PRIMARY KEY (book_id)
 );
 
 -- relationship table loan

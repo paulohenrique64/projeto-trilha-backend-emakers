@@ -8,7 +8,6 @@ import com.paulohenrique.library.exception.LibraryApiException;
 import com.paulohenrique.library.exception.UnauthorizedException;
 import com.paulohenrique.library.repository.UserRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +29,7 @@ public class UserService {
     }
 
     public ResponseEntity<GeneralResponseDto> deleteAccount(AccountDeleteRequestDto deleteAccountRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
-        Optional<User> user = userRepository.findByUsername(authenticationToken.getName());
+        Optional<User> user = userRepository.findByEmail(authenticationToken.getName());
 
         if (user.isPresent()) {
             if (passwordEncoder.matches(deleteAccountRequestDto.password(), user.get().getPassword())) {
@@ -42,11 +40,11 @@ public class UserService {
             throw new UnauthorizedException("Invalid password");
         }
 
-        throw new UnauthorizedException("Invalid username");
+        throw new UnauthorizedException("Invalid name");
     }
 
     public ResponseEntity<User> updateData(UpdateUserRequestDto updateUserRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
-        Optional<User> userOptional = userRepository.findByUsername(authenticationToken.getName());
+        Optional<User> userOptional = userRepository.findByEmail(authenticationToken.getName());
 
         if (userOptional.isPresent()) {
             User user = compareAndUpdateUser(updateUserRequestDto, userOptional.get());
@@ -54,7 +52,7 @@ public class UserService {
             return ResponseEntity.ok(user);
         }
 
-        throw new UnauthorizedException("Invalid username");
+        throw new UnauthorizedException("Invalid name");
     }
 
     public ResponseEntity<User> updateUser(int userId, UpdateUserRequestDto updateUserRequestDto) {
@@ -66,20 +64,20 @@ public class UserService {
             return ResponseEntity.ok(user);
         }
 
-        throw new UnauthorizedException("Invalid username");
+        throw new UnauthorizedException("Invalid name");
     }
 
     private User compareAndUpdateUser(UpdateUserRequestDto updateUserRequestDto, User user) {
-        if (updateUserRequestDto.username() != null) {
-            user.setName(updateUserRequestDto.username());
+        if (updateUserRequestDto.name() != null) {
+            user.setName(updateUserRequestDto.name());
         }
 
         if (updateUserRequestDto.password() != null) {
             user.setPassword(passwordEncoder.encode(updateUserRequestDto.password()));
         }
 
-        if (updateUserRequestDto.cep() != null) {
-            user.setCep(updateUserRequestDto.cep());
+        if (updateUserRequestDto.email() != null) {
+            user.setCep(updateUserRequestDto.email());
         }
 
         return user;
@@ -97,10 +95,10 @@ public class UserService {
     }
 
     public ResponseEntity<User> getUserData(UsernamePasswordAuthenticationToken authenticationToken) {
-        Optional<User> user = userRepository.findByUsername(authenticationToken.getName());
+        Optional<User> user = userRepository.findByEmail(authenticationToken.getName());
 
         if (user.isEmpty()) {
-            throw new UnauthorizedException("Invalid username");
+            throw new UnauthorizedException("Invalid name");
         }
 
         return ResponseEntity.ok(user.get());

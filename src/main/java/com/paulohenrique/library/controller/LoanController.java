@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.NamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,18 +23,18 @@ public class LoanController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<GeneralResponseDto> createLoan(@RequestParam("bookId") int bookId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-        return loanService.createLoan(bookId, usernamePasswordAuthenticationToken);
+    public ResponseEntity<GeneralResponseDto> createLoan(@RequestParam("bookId") int bookId, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
+        return loanService.createLoan(bookId, namePasswordAuthenticationToken);
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<GeneralResponseDto> deleteLoan(@RequestParam("loanId") int loanId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-        return loanService.deleteLoan(loanId, usernamePasswordAuthenticationToken);
+    public ResponseEntity<GeneralResponseDto> returnBook(@RequestParam("loanId") int loanId, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
+        return loanService.returnBook(loanId, namePasswordAuthenticationToken);
     }
 
     @GetMapping("/")
-    public ResponseEntity<Page<Loan>> listAllUserLoans(@PageableDefault(size = 10, sort = "loanId") Pageable pageable, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-        return loanService.listAllUserLoans(pageable, usernamePasswordAuthenticationToken);
+    public ResponseEntity<Page<Loan>> listAllUserLoans(@PageableDefault(size = 10, sort = "loanId") Pageable pageable, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
+        return loanService.listAllUserLoans(pageable, namePasswordAuthenticationToken);
     }
 
     @DeleteMapping("/{loanId}")

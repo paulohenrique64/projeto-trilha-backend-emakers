@@ -16,13 +16,19 @@ public class User implements UserDetails {
     private int userId;
 
     @Basic(optional = false)
-    private String username;
+    private String name;
+
+    @Basic(optional = false)
+    private String email;
 
     @Basic(optional = false)
     private String password;
 
     @Basic(optional = false)
     private String cep;
+
+    @Basic(optional = false)
+    private String state;
 
     @OneToOne
     @JoinColumn(name="role_id")
@@ -31,7 +37,7 @@ public class User implements UserDetails {
     public User() { }
 
     public User(String name, String password, String cep, Role role) {
-        this.username = name;
+        this.name = name;
         this.cep = cep;
         this.password = password;
         this.role = role;
@@ -42,7 +48,7 @@ public class User implements UserDetails {
     }
 
     public void setName(String name) {
-        this.username = name;
+        this.name = name;
     }
 
     public String getCep() {
@@ -55,6 +61,14 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
     }
 
     @Override
@@ -73,6 +87,10 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
+    }
+
+    public String getName() {
+        return name;
     }
 }

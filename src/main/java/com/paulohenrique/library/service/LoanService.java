@@ -33,7 +33,7 @@ public class LoanService {
     }
 
     public ResponseEntity<GeneralResponseDto> createLoan(int bookId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-        Optional<User> userOptional = userRepository.findByUsername(usernamePasswordAuthenticationToken.getName());
+        Optional<User> userOptional = userRepository.findByEmail(usernamePasswordAuthenticationToken.getName());
         Optional<Book> bookOptional = bookRepository.findByBookId(bookId);
 
         if (userOptional.isEmpty()) {
@@ -44,19 +44,28 @@ public class LoanService {
             throw new LibraryApiException(HttpStatus.NOT_FOUND, "Book not found");
         }
 
+        // Verificar se o livro já está em um empréstimo
         List<Loan> loanList = loanRepository.findAllByBook_BookId(bookId);
 
         if (!loanList.isEmpty()) {
             throw new LibraryApiException(HttpStatus.CONFLICT, "Loan already exists");
         }
 
+        // Verificar se o usuário já possui mais de 2 livros em empreśtimos
+        loanList = loanRepository.findAllByUser_UserId(userOptional.get().getUserId());
+
+        if (loanList.size() > 2){
+            throw new LibraryApiException(HttpStatus.CONFLICT, "You cannot have more than 2 books on loan");
+        }
+
+        // Caso contrário, realiza o empréstimo
         loanRepository.save(new Loan(userOptional.get(), bookOptional.get(), LocalDate.now()));
 
         return ResponseEntity.ok().body(new GeneralResponseDto(true, "Loan created successfully"));
     }
 
-    public ResponseEntity<GeneralResponseDto> deleteLoan(int loanId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-        Optional<User> userOptional = userRepository.findByUsername(usernamePasswordAuthenticationToken.getName());
+    public ResponseEntity<GeneralResponseDto> returnBook(int loanId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+        Optional<User> userOptional = userRepository.findByEmail(usernamePasswordAuthenticationToken.getName());
 
         if (userOptional.isEmpty()) {
             throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
@@ -73,16 +82,16 @@ public class LoanService {
         Loan loan = loanOptional.get();
 
         if (loan.getUserId() != user.getUserId()) {
-            throw new UnauthorizedException("You do not have permission to delete this loan");
+            throw new UnauthorizedException("You do not have permission to modify this loan");
         }
 
         loanRepository.delete(loanOptional.get());
 
-        return ResponseEntity.ok().body(new GeneralResponseDto(true, "Loan deleted successfully"));
+        return ResponseEntity.ok().body(new GeneralResponseDto(true, "Book returned successfully"));
     }
 
     public ResponseEntity<Page<Loan>> listAllUserLoans(Pageable pageable, UsernamePasswordAuthenticationToken authentication) {
-        Optional<User> userOptional = userRepository.findByUsername(authentication.getName());
+        Optional<User> userOptional = userRepository.findByEmail(authentication.getName());
 
         if (userOptional.isEmpty()) {
             throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");

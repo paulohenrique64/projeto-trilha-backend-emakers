@@ -21,13 +21,13 @@ public class JpaUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByEmail(name);
 
         if (user.isPresent()) {
             return user.get();
         }
 
-        throw new LibraryApiException(HttpStatus.FORBIDDEN, "User not found: " + username);
+        throw new LibraryApiException(HttpStatus.FORBIDDEN, "User not found: " + name);
     }
 }

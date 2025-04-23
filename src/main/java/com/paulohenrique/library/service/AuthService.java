@@ -18,7 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -42,14 +44,14 @@ public class AuthService {
     }
 
     public ResponseEntity<LoginResponseDto> login(LoginRequest loginRequest) {
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.email(), loginRequest.password());
         Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
         User user = (User) authenticationResponse.getPrincipal();
 
         if (user != null) {
             var token = jwtService.generateToken((UserDetails) authenticationResponse.getPrincipal());
             if (token != null) {
-                return ResponseEntity.ok().body(new LoginResponseDto(true, "Login successful", token, new UserResponseDto(user.getUserId(), user.getUsername(), user.getRoleName())));
+                return ResponseEntity.ok().body(new LoginResponseDto(true, "Login successful", token, new UserResponseDto(user.getUserId(), user.getName(), user.getUsername(), user.getCep(), user.getState(), user.getRoleName())));
             }
         }
 
@@ -58,11 +60,21 @@ public class AuthService {
 
     public ResponseEntity<RegisterResponseDto> register(RegisterRequest registerRequest) {
         String password = registerRequest.password();
-        String username = registerRequest.username();
+        String name = registerRequest.name();
         String cep = registerRequest.cep();
+        String url = "https://viacep.com.br/ws/" + cep + "/json/";
+        String state = "Unknown";
 
-        if (userRepository.findByUsername(registerRequest.username()).isPresent()) {
-            throw new LibraryApiException(HttpStatus.BAD_REQUEST, "Username is already in use");
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Map<String, Object> body = response.getBody();
+            state = (String) body.get("estado");
+        }
+
+        if (userRepository.findByEmail(registerRequest.name()).isPresent()) {
+            throw new LibraryApiException(HttpStatus.BAD_REQUEST, "Name is already in use");
         }
 
         password = passwordEncoder.encode(password);
@@ -72,8 +84,8 @@ public class AuthService {
             throw new LibraryApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
 
-        User user = userRepository.save(new User(username, password, cep, role.get()));
+        User user = userRepository.save(new User(name, password, cep, role.get()));
 
-        return ResponseEntity.ok().body(new RegisterResponseDto(true, "User registered successfully", new UserResponseDto(user.getUserId(), user.getUsername(), user.getRoleName())));
+        return ResponseEntity.ok().body(new RegisterResponseDto(true, "User registered successfully", new UserResponseDto(user.getUserId(), user.getName(), user.getUsername(), user.getCep(), user.getState(), user.getRoleName())));
     }
 }
