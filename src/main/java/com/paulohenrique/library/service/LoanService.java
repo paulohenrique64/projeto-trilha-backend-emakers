@@ -48,13 +48,14 @@ public class LoanService {
         List<Loan> loanList = loanRepository.findAllByBook_BookId(bookId);
 
         if (!loanList.isEmpty()) {
-            throw new LibraryApiException(HttpStatus.CONFLICT, "Loan already exists");
+            throw new LibraryApiException(HttpStatus.CONFLICT, "The book is currently on loan and unavailable");
         }
 
         // Verificar se o usuário já possui mais de 2 livros em empreśtimos
         loanList = loanRepository.findAllByUser_UserId(userOptional.get().getUserId());
+        System.out.println(loanList);
 
-        if (loanList.size() > 2){
+        if (loanList.size() >= 2){
             throw new LibraryApiException(HttpStatus.CONFLICT, "You cannot have more than 2 books on loan");
         }
 

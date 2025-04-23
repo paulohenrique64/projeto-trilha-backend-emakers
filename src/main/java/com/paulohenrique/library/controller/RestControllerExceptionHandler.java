@@ -9,15 +9,19 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.View;
 
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class RestControllerExceptionHandler {
-
+    //
+    // Tratando as exceptions lançadas por mim
+    //
     @ExceptionHandler(LibraryApiException.class)
     public ResponseEntity<GeneralResponseDto> handleLibraryApiException(LibraryApiException e) {
         return ResponseEntity.status(e.getStatus()).body(new GeneralResponseDto(false, e.getMessage()));
@@ -33,16 +37,26 @@ public class RestControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new GeneralResponseDto(false, e.getMessage()));
     }
 
+    //
+    // Tratando as exceptions lançadas pelo Spring
+    //
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<GeneralResponseDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GeneralResponseDto(false, e.getMessage()));
+        String errorMessage = "The request body could not be parsed";
+        return ResponseEntity.badRequest().body(new GeneralResponseDto(false, errorMessage));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<GeneralResponseDto> handleValidationErrors(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+    public ResponseEntity<GeneralResponseDto> handleValidationErrors(MethodArgumentNotValidException e) {
+        var fieldErrors = e.getBindingResult().getFieldErrors();
+        String errorMessage = "Request Body is invalid";
+
+        for (FieldError fieldError : fieldErrors) {
+            if (fieldError.getDefaultMessage() != null) {
+                errorMessage = fieldError.getDefaultMessage();
+            }
+        }
+
         return ResponseEntity.badRequest().body(new GeneralResponseDto(false, errorMessage));
     }
 }

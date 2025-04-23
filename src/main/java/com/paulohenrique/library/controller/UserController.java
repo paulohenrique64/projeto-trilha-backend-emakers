@@ -88,6 +88,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Dados do usuário atualizados com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{userId}")
     @Transactional
     public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody @Validated UpdateUserRequestDto updateUserRequestDto) {
