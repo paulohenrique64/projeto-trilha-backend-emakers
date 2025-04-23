@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private ValidateTokenFilter validateTokenFilter;
@@ -46,10 +48,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/books", "/books/*").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/books/*", "/loan/*", "/user/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/loan", "/user", "/user/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/books/*", "/user/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
                         .requestMatchers(SWAGGER_UI_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );

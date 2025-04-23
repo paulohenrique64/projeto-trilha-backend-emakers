@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 @RestController
@@ -40,7 +41,7 @@ public class UserService {
             throw new UnauthorizedException("Invalid password");
         }
 
-        throw new UnauthorizedException("Invalid name");
+        throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     public ResponseEntity<User> updateData(UpdateUserRequestDto updateUserRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
@@ -52,7 +53,7 @@ public class UserService {
             return ResponseEntity.ok(user);
         }
 
-        throw new UnauthorizedException("Invalid name");
+        throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     public ResponseEntity<User> updateUser(int userId, UpdateUserRequestDto updateUserRequestDto) {
@@ -64,7 +65,7 @@ public class UserService {
             return ResponseEntity.ok(user);
         }
 
-        throw new UnauthorizedException("Invalid name");
+        throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     private User compareAndUpdateUser(UpdateUserRequestDto updateUserRequestDto, User user) {
@@ -91,14 +92,14 @@ public class UserService {
             return ResponseEntity.ok(new GeneralResponseDto(true, "User deleted successfully"));
         }
 
-        throw new UnauthorizedException("Invalid user id");
+        throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     public ResponseEntity<User> getUserData(UsernamePasswordAuthenticationToken authenticationToken) {
         Optional<User> user = userRepository.findByEmail(authenticationToken.getName());
 
         if (user.isEmpty()) {
-            throw new UnauthorizedException("Invalid name");
+            throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         return ResponseEntity.ok(user.get());
@@ -111,14 +112,14 @@ public class UserService {
             return ResponseEntity.ok(user.get());
         }
 
-        throw new UnauthorizedException("Invalid user id");
+        throw new LibraryApiException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     public ResponseEntity<Page<User>> listAllUsers(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
 
         if (users.isEmpty()) {
-            throw new LibraryApiException(HttpStatus.OK, "No users found");
+            throw new LibraryApiException(HttpStatus.NOT_FOUND, "No users found");
         }
 
         return ResponseEntity.ok(users);

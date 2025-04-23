@@ -16,11 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController()
 @RequestMapping("/user")
@@ -65,6 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Usuário removido com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     @Transactional
     public ResponseEntity<GeneralResponseDto> deleteUser(@PathVariable int userId) {
@@ -76,6 +77,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public ResponseEntity<User> listUser(@PathVariable int userId) {
         return userService.listUser(userId);
@@ -94,6 +96,7 @@ public class UserController {
 
     @Operation(summary = "Listar todos os usuários | \uD83D\uDD10 Requer ADMIN", description = "Retorna uma lista paginada de todos os usuários cadastrados (somente administradores).")
     @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<User>> listAllUsers(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
         return userService.listAllUsers(pageable);

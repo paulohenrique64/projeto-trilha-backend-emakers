@@ -74,8 +74,8 @@ public class AuthService {
             state = (String) body.get("estado");
         }
 
-        if (userRepository.findByEmail(registerRequest.name()).isPresent()) {
-            throw new LibraryApiException(HttpStatus.BAD_REQUEST, "Name is already in use");
+        if (userRepository.findByEmail(registerRequest.email()).isPresent()) {
+            throw new LibraryApiException(HttpStatus.BAD_REQUEST, "Email is already in use");
         }
 
         password = passwordEncoder.encode(password);

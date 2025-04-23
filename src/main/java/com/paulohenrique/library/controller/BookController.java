@@ -55,6 +55,7 @@ public class BookController {
                     content = @Content(schema = @Schema(implementation = Book.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Transactional
     public ResponseEntity<Book> save(@RequestBody @Validated BookRequestDto bookRequestDto) {
@@ -66,6 +67,7 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "Livro atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Livro não encontrado", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{bookId}")
     @Transactional
     public ResponseEntity<Book> editBook(@PathVariable Long bookId, @RequestBody @Validated BookEditRequestDto dto) {
@@ -77,6 +79,7 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "Livro removido com sucesso"),
             @ApiResponse(responseCode = "404", description = "Livro não encontrado", content = @Content)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{bookId}")
     @Transactional
     public ResponseEntity<GeneralResponseDto> deleteBook(@PathVariable Long bookId) {
