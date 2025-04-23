@@ -29,8 +29,6 @@ public class ValidateTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
 
-        System.out.println("\n\n" + token + "\n\n");
-
         if (token != null) {
             String name = jwtService.validateToken(token);
             Optional<User> user = userRepository.findByEmail(name);

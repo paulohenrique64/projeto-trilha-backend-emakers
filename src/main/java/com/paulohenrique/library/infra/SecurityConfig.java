@@ -24,23 +24,51 @@ public class SecurityConfig {
     @Autowired
     private ValidateTokenFilter validateTokenFilter;
 
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .addFilterBefore(validateTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf ->
+                        csrf.disable()
+                )
+                .addFilterBefore(
+                        validateTokenFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books", "/books/{bookId}").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/books", "/loan/{loanId}", "/user/{userId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/loan", "/user", "/user/{userId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/books/{id}", "/user/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/books", "/books/*").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/books/*", "/loan/*", "/user/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/loan", "/user", "/user/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/books/*", "/user/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
+                        .requestMatchers(SWAGGER_UI_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
-    }    
+    }
+
+    private static final String[] SWAGGER_UI_ENDPOINTS = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
 
     @Bean
     public AuthenticationManager authenticationManager(
