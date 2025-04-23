@@ -1,4 +1,4 @@
-package com.paulohenrique.library.infra.config;
+package com.paulohenrique.library.infra;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

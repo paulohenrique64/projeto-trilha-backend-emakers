@@ -1,7 +1,9 @@
 package com.paulohenrique.library.service;
 
 import com.paulohenrique.library.data.entity.User;
+import com.paulohenrique.library.exception.LibraryApiException;
 import com.paulohenrique.library.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +28,6 @@ public class JpaUserDetailsService implements UserDetailsService {
             return user.get();
         }
 
-        throw new UsernameNotFoundException("Usuário não encontrado: " + username);
+        throw new LibraryApiException(HttpStatus.FORBIDDEN, "User not found: " + username);
     }
 }

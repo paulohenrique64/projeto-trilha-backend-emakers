@@ -1,41 +1,66 @@
 package com.paulohenrique.library.controller;
 
-import com.paulohenrique.library.data.dto.request.DeleteAccountRequest;
+import com.paulohenrique.library.data.dto.request.AccountDeleteRequestDto;
+import com.paulohenrique.library.data.dto.request.UpdateUserRequestDto;
+import com.paulohenrique.library.data.dto.response.GeneralResponseDto;
+import com.paulohenrique.library.data.entity.Book;
 import com.paulohenrique.library.data.entity.User;
-import com.paulohenrique.library.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.paulohenrique.library.service.UserService;
+import jakarta.annotation.security.RolesAllowed;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
-@RestController
+@RestController()
+@RequestMapping("/user")
 public class UserController {
+    private final UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @DeleteMapping
+    public ResponseEntity<GeneralResponseDto> deleteAccount(@RequestBody AccountDeleteRequestDto deleteAccountRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
+        return userService.deleteAccount(deleteAccountRequestDto, authenticationToken);
+    }
 
-    @PostMapping("/delete-account")
-    public ResponseEntity<String> deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest, UsernamePasswordAuthenticationToken authenticationToken) {
-        Optional<User> user = userRepository.findByUsername(authenticationToken.getName());
+    @GetMapping("/user-data")
+    public ResponseEntity<User> getUserData(UsernamePasswordAuthenticationToken authenticationToken) {
+        return userService.getUserData(authenticationToken);
+    }
 
-        if (user.isPresent()) {
-            if (passwordEncoder.matches(deleteAccountRequest.password(), user.get().getPassword())) {
-                userRepository.delete(user.get());
-                return ResponseEntity.ok("Deleted account successfully");
-            }
+    @PatchMapping("/")
+    public ResponseEntity<User> updateData(@RequestBody UpdateUserRequestDto updateUserRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
+        return userService.updateData(updateUserRequestDto, authenticationToken);
+    }
 
-            return ResponseEntity.badRequest().body("Invalid password");
-        }
+    @DeleteMapping("/{userId}")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<GeneralResponseDto> deleteUser(@PathVariable int userId) {
+        return userService.deleteUser(userId);
+    }
 
-        return ResponseEntity.badRequest().body("Invalid username");
+    @GetMapping("/{userId}")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<User> listUser(@PathVariable int userId) {
+        return userService.listUser(userId);
+    }
+
+    @PatchMapping("/admin/{userId}")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody UpdateUserRequestDto updateUserRequestDto) {
+        return userService.updateUser(userId, updateUserRequestDto);
+    }
+
+    @GetMapping("/")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Page<User>> adminListAllUsers(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        return userService.listAllUsers(pageable);
     }
 }

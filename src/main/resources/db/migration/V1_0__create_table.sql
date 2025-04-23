@@ -10,7 +10,7 @@ CREATE TABLE book (
 -- table user
 CREATE TABLE users (
     user_id INT NOT NULL AUTO_INCREMENT,
-    username VARCHAR(80) NOT NULL,
+    username VARCHAR(80) NOT NULL UNIQUE,
     password VARCHAR(80) NOT NULL,
     cep CHAR(9) NOT NULL,
     PRIMARY KEY (user_id)

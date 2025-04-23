@@ -3,10 +3,10 @@ package com.paulohenrique.library.data.entity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -24,12 +24,17 @@ public class User implements UserDetails {
     @Basic(optional = false)
     private String cep;
 
+    @OneToOne
+    @JoinColumn(name="role_id")
+    private Role role;
+
     public User() { }
 
-    public User(String name, String password, String cep) {
+    public User(String name, String password, String cep, Role role) {
         this.username = name;
         this.cep = cep;
         this.password = password;
+        this.role = role;
     }
 
     public int getUserId() {
@@ -48,9 +53,17 @@ public class User implements UserDetails {
         this.cep = cep;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(role);
+    }
+
+    public String getRoleName() {
+        return role.getAuthority();
     }
 
     @Override

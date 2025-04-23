@@ -1,19 +1,15 @@
 package com.paulohenrique.library.data.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record RegisterRequest(
-        @NotBlank(message = "Username is required")
+public record UpdateUserRequestDto(
         @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
         String username,
 
-        @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 50, message = "Username must be between 8 and 50 characters")
+        @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
         String password,
 
-        @NotBlank(message = "CEP code is required")
         @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP code must be in the format 12345-678")
         String cep
 ) {}
