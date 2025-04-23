@@ -6,8 +6,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 public record BookRequestDto(
-        @NotBlank(message = "Book name is required")
-        String name,
+        @NotBlank(message = "Book title is required")
+        String title,
 
         @NotBlank(message = "Author name is required")
         String author,

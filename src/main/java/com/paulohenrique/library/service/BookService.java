@@ -22,7 +22,7 @@ public class BookService {
     }
 
     public ResponseEntity<Book> save(BookRequestDto bookRequestDto) {
-        Book book = bookRepository.save(new Book(bookRequestDto.name(), bookRequestDto.author(), bookRequestDto.releaseDate()));
+        Book book = bookRepository.save(new Book(bookRequestDto.title(), bookRequestDto.author(), bookRequestDto.releaseDate()));
         return ResponseEntity.ok(book);
     }
 
@@ -46,8 +46,8 @@ public class BookService {
 
         Book book = bookOptional.get();
 
-        if (dto.name() != null && !dto.name().isBlank()) {
-            book.setName(dto.name());
+        if (dto.title() != null && !dto.title().isBlank()) {
+            book.setTitle(dto.title());
         }
 
         if (dto.author() != null && !dto.author().isBlank()) {

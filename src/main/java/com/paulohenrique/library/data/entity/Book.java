@@ -13,20 +13,19 @@ public class Book {
     @GeneratedValue(strategy = IDENTITY)
     private int bookId;
 
-    @Basic(optional=false)
-    private String name;
+    @Column(nullable = false)
+    private String title;
 
-    @Basic(optional=false)
+    @Column(nullable = false)
     private String author;
 
-    @Column(name="release_date")
-    @Basic(optional=false)
+    @Column(name="release_date", nullable = false)
     private LocalDate releaseDate;
 
     public Book() {}
 
-    public Book(String name, String author, LocalDate releaseDate) {
-        this.name = name;
+    public Book(String title, String author, LocalDate releaseDate) {
+        this.title = title;
         this.author = author;
         this.releaseDate = releaseDate;
     }
@@ -35,12 +34,12 @@ public class Book {
         return bookId;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAuthor() {

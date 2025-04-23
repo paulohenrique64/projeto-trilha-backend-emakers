@@ -15,32 +15,42 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String name;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String email;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String password;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String cep;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String state;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="role_id")
     private Role role;
 
     public User() { }
 
-    public User(String name, String password, String cep, Role role) {
+    public User(String name, String email, String password, String cep, String state, Role role) {
         this.name = name;
         this.cep = cep;
         this.password = password;
         this.role = role;
+        this.email = email;
+        this.state = state;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getUserId() {

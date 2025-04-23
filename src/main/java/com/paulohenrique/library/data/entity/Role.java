@@ -12,7 +12,7 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roleId;
 
-    @Basic(optional=false)
+    @Column(nullable = false)
     private String roleName;
 
     public Role() {}

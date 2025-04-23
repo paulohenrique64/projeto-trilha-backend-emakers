@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BookEditRequestDto(
-        String name,
+        String title,
         String author,
         @PastOrPresent(message = "Release date cannot be in the future")
         LocalDate releaseDate

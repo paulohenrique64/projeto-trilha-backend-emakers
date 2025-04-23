@@ -60,6 +60,7 @@ public class AuthService {
 
     public ResponseEntity<RegisterResponseDto> register(RegisterRequest registerRequest) {
         String password = registerRequest.password();
+        String email = registerRequest.email();
         String name = registerRequest.name();
         String cep = registerRequest.cep();
         String url = "https://viacep.com.br/ws/" + cep + "/json/";
@@ -84,7 +85,7 @@ public class AuthService {
             throw new LibraryApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
 
-        User user = userRepository.save(new User(name, password, cep, role.get()));
+        User user = userRepository.save(new User(name, email, password, cep, state, role.get()));
 
         return ResponseEntity.ok().body(new RegisterResponseDto(true, "User registered successfully", new UserResponseDto(user.getUserId(), user.getName(), user.getUsername(), user.getCep(), user.getState(), user.getRoleName())));
     }

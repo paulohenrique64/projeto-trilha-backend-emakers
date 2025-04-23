@@ -31,11 +31,14 @@ public class SecurityConfig {
                 .addFilterBefore(validateTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/delete-user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/books", "/books/{bookId}").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/books", "/loan/{loanId}", "/user/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/loan", "/user", "/user/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/books/{id}", "/user/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
-
         return http.build();
     }    
 

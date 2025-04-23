@@ -19,7 +19,7 @@ public class Loan {
     @JoinColumn(name="book_id")
     private Book book;
 
-    @Basic(optional=false)
+    @Column(nullable = false)
     private LocalDate loanDate;
 
     public Loan() {}

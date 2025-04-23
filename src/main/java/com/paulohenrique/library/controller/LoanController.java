@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.NamePasswordAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,35 +22,32 @@ public class LoanController {
         this.loanService = loanService;
     }
 
-    @PostMapping("/")
-    public ResponseEntity<GeneralResponseDto> createLoan(@RequestParam("bookId") int bookId, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
-        return loanService.createLoan(bookId, namePasswordAuthenticationToken);
+    @PostMapping
+    public ResponseEntity<GeneralResponseDto> createLoan(@RequestParam("bookId") int bookId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+        return loanService.createLoan(bookId, usernamePasswordAuthenticationToken);
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<GeneralResponseDto> returnBook(@RequestParam("loanId") int loanId, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
-        return loanService.returnBook(loanId, namePasswordAuthenticationToken);
+    @DeleteMapping
+    public ResponseEntity<GeneralResponseDto> returnBook(@RequestParam("loanId") int loanId, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+        return loanService.returnBook(loanId, usernamePasswordAuthenticationToken);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<Page<Loan>> listAllUserLoans(@PageableDefault(size = 10, sort = "loanId") Pageable pageable, NamePasswordAuthenticationToken namePasswordAuthenticationToken) {
-        return loanService.listAllUserLoans(pageable, namePasswordAuthenticationToken);
+    @GetMapping("/user-loans")
+    public ResponseEntity<Page<Loan>> listAllUserLoans(@PageableDefault(size = 10, sort = "loanId") Pageable pageable, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+        return loanService.listAllUserLoans(pageable, usernamePasswordAuthenticationToken);
     }
 
     @DeleteMapping("/{loanId}")
-    @RolesAllowed("ADMIN")
     public ResponseEntity<GeneralResponseDto> deleteLoan(@PathVariable("loanId") int loanId) {
         return loanService.deleteLoanById(loanId);
     }
 
     @GetMapping("/{loanId}")
-    @RolesAllowed("ADMIN")
     public ResponseEntity<Loan> getLoan(@PathVariable("loanId") int loanId) {
         return loanService.listLoanById(loanId);
     }
 
     @GetMapping
-    @RolesAllowed("ADMIN")
     public ResponseEntity<Page<Loan>> listAllLoans(@PageableDefault(size = 10, sort = "loanId") Pageable pageable) {
         return loanService.listAllLoans(pageable);
     }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<GeneralResponseDto> deleteAccount(@RequestBody AccountDeleteRequestDto deleteAccountRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
+    public ResponseEntity<GeneralResponseDto> deleteAccount(@RequestBody @Validated AccountDeleteRequestDto deleteAccountRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
         return userService.deleteAccount(deleteAccountRequestDto, authenticationToken);
     }
 
@@ -35,32 +36,28 @@ public class UserController {
         return userService.getUserData(authenticationToken);
     }
 
-    @PatchMapping("/")
-    public ResponseEntity<User> updateData(@RequestBody UpdateUserRequestDto updateUserRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
+    @PatchMapping
+    public ResponseEntity<User> updateData(@RequestBody @Validated UpdateUserRequestDto updateUserRequestDto, UsernamePasswordAuthenticationToken authenticationToken) {
         return userService.updateData(updateUserRequestDto, authenticationToken);
     }
 
     @DeleteMapping("/{userId}")
-    @RolesAllowed("ADMIN")
     public ResponseEntity<GeneralResponseDto> deleteUser(@PathVariable int userId) {
         return userService.deleteUser(userId);
     }
 
     @GetMapping("/{userId}")
-    @RolesAllowed("ADMIN")
     public ResponseEntity<User> listUser(@PathVariable int userId) {
         return userService.listUser(userId);
     }
 
-    @PatchMapping("/admin/{userId}")
-    @RolesAllowed("ADMIN")
-    public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody UpdateUserRequestDto updateUserRequestDto) {
+    @PatchMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody @Validated UpdateUserRequestDto updateUserRequestDto) {
         return userService.updateUser(userId, updateUserRequestDto);
     }
 
-    @GetMapping("/")
-    @RolesAllowed("ADMIN")
-    public ResponseEntity<Page<User>> adminListAllUsers(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
+    @GetMapping
+    public ResponseEntity<Page<User>> listAllUsers(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
         return userService.listAllUsers(pageable);
     }
 }
